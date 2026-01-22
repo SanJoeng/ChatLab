@@ -1,0 +1,210 @@
+/**
+ * Markdown 渲染通用样式
+ * 用于 AI 消息、总结等需要渲染 Markdown 的地方
+ * 使用方式：在组件的 <style> 中 @import 此文件，或在全局样式中引入
+ */
+
+/* 段落 */
+.prose :deep(p) {
+  margin: 0.5em 0;
+  line-height: 1.6;
+}
+
+.prose :deep(p:first-child) {
+  margin-top: 0;
+}
+
+.prose :deep(p:last-child) {
+  margin-bottom: 0;
+}
+
+/* 标题 */
+.prose :deep(h1) {
+  font-size: 1.25rem;
+  font-weight: 700;
+  margin: 1em 0 0.5em;
+  line-height: 1.3;
+}
+
+.prose :deep(h2) {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0.875em 0 0.5em;
+  line-height: 1.4;
+}
+
+.prose :deep(h3) {
+  font-size: 1rem;
+  font-weight: 600;
+  margin: 0.75em 0 0.375em;
+  line-height: 1.4;
+}
+
+.prose :deep(h1:first-child),
+.prose :deep(h2:first-child),
+.prose :deep(h3:first-child) {
+  margin-top: 0;
+}
+
+/* 列表 */
+.prose :deep(ul),
+.prose :deep(ol) {
+  margin: 0.5em 0;
+  padding-left: 1.5em;
+}
+
+.prose :deep(ul) {
+  list-style-type: disc;
+}
+
+.prose :deep(ol) {
+  list-style-type: decimal;
+}
+
+.prose :deep(li) {
+  margin: 0.25em 0;
+  line-height: 1.5;
+}
+
+.prose :deep(li > p) {
+  margin: 0.25em 0;
+}
+
+/* 嵌套列表 */
+.prose :deep(ul ul),
+.prose :deep(ol ol),
+.prose :deep(ul ol),
+.prose :deep(ol ul) {
+  margin: 0.25em 0;
+}
+
+/* 代码 */
+.prose :deep(code) {
+  font-family: ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+  padding: 0.15em 0.4em;
+  border-radius: 0.25rem;
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+.dark .prose :deep(code) {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+/* 代码块 */
+.prose :deep(pre) {
+  margin: 0.75em 0;
+  padding: 0.875em 1em;
+  border-radius: 0.5rem;
+  background-color: #1e293b;
+  overflow-x: auto;
+}
+
+.prose :deep(pre code) {
+  padding: 0;
+  background: none;
+  color: #e2e8f0;
+  font-size: 0.8125rem;
+  line-height: 1.6;
+}
+
+/* 引用块 - 使用项目主题粉色 */
+.prose :deep(blockquote) {
+  margin: 0.75em 0;
+  padding: 0.5em 0 0.5em 1em;
+  border-left: 3px solid var(--color-pink-500, #ee4567);
+  background-color: color-mix(in srgb, var(--color-pink-500, #ee4567) 5%, transparent);
+  border-radius: 0 0.25rem 0.25rem 0;
+}
+
+.prose :deep(blockquote p) {
+  margin: 0;
+  color: #6b7280;
+}
+
+.dark .prose :deep(blockquote p) {
+  color: #9ca3af;
+}
+
+/* 链接 - 使用项目主题粉色 */
+.prose :deep(a) {
+  color: var(--color-pink-500, #ee4567);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.prose :deep(a:hover) {
+  color: var(--color-pink-600, #de335e);
+}
+
+/* 分割线 */
+.prose :deep(hr) {
+  margin: 1em 0;
+  border: none;
+  border-top: 1px solid #e5e7eb;
+}
+
+.dark .prose :deep(hr) {
+  border-top-color: #374151;
+}
+
+/* 加粗和斜体 */
+.prose :deep(strong) {
+  font-weight: 600;
+}
+
+.prose :deep(em) {
+  font-style: italic;
+}
+
+/* 表格 */
+.prose :deep(table) {
+  width: 100%;
+  margin: 0.75em 0;
+  border-collapse: collapse;
+  font-size: 0.875em;
+}
+
+.prose :deep(th),
+.prose :deep(td) {
+  padding: 0.5em 0.75em;
+  border: 1px solid #e5e7eb;
+  text-align: left;
+}
+
+.dark .prose :deep(th),
+.dark .prose :deep(td) {
+  border-color: #374151;
+}
+
+.prose :deep(th) {
+  background-color: #f9fafb;
+  font-weight: 600;
+}
+
+.dark .prose :deep(th) {
+  background-color: #1f2937;
+}
+
+/* 用户消息中的样式调整（白色文字背景） */
+.prose-invert :deep(code) {
+  background-color: rgba(255, 255, 255, 0.2);
+}
+
+.prose-invert :deep(a) {
+  color: var(--color-pink-300, #faa7b4);
+}
+
+.prose-invert :deep(a:hover) {
+  color: var(--color-pink-200, #fccfd5);
+}
+
+.prose-invert :deep(blockquote) {
+  border-left-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.prose-invert :deep(blockquote p) {
+  color: rgba(255, 255, 255, 0.8);
+}
+
