@@ -1,7 +1,7 @@
 ChatLab (Embedding & Streaming Fork)
 
 Original project by @hellodigua
-原始仓库：https://github.com/hellodigua/ChatLab￼
+原始仓库：[https://github.com/hellodigua/ChatLab](https://github.com/hellodigua/ChatLab)￼
 
 本仓库是 ChatLab 的一个 技术实验 fork，用于探索：
 	•	向量检索（Embedding-based Semantic Search）
