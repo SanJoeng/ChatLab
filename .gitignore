@@ -37,3 +37,9 @@ yarn.lock
 .vscode
 .docs
 
+
+# local deps & build outputs
+node_modules/
+out/
+dist/
+.DS_Store
