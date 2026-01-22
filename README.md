@@ -1,84 +1,102 @@
-# ChatLab
+ChatLab (Embedding & Streaming Fork)
 
-简体中文 | [English](./README_en.md)
+Original project by @hellodigua
+原始仓库：https://github.com/hellodigua/ChatLab￼
 
-ChatLab 是一个免费、开源、本地化的，专注于分析聊天记录的应用。通过 AI Agent 和灵活的 SQL 引擎，你可以自由地拆解、查询甚至重构你的社交数据。
+本仓库是 ChatLab 的一个 技术实验 fork，用于探索：
+	•	向量检索（Embedding-based Semantic Search）
+	•	OpenAI-compatible 流式输出在部分模型下的兼容性问题修复
 
-目前已支持：微信、QQ、WhatsApp、Discord、Instagram 的聊天记录分析，计划支持：iMessage、LINE、Messenger、Kakao Talk。
+⚠️ 说明：该 fork 不作为主线功能直接合并目标，而是作为实现思路与代码参考。
 
-## 核心特性
+⸻
 
-- 🚀 **极致性能**：使用流式计算与多线程并行架构，就算是百万条级别的聊天记录，依然拥有丝滑交互和响应。
-- 🔒 **保护隐私**：聊天记录和配置都存在你的本地数据库，所有分析都在本地进行（AI 功能例外）。
-- 🤖 **智能 AI Agent**：集成 10+ Function Calling 工具，支持动态调度，深度挖掘聊天记录中的更多有趣。
-- 📊 **多维数据可视化**：提供活跃度趋势、时间规律分布、成员排行等多个维度的直观分析图表。
-- 🧩 **格式标准化**：通过强大的数据抽象层，抹平不同聊天软件的格式差异，任何聊天记录都能分析。
+✨ 本 Fork 做了什么
 
-## 使用指南
+1️⃣ 引入 Embedding + 语义检索 Pipeline
 
-- [导出聊天记录指南](https://chatlab.fun/cn/usage/how-to-export.html)
-- [标准化格式规范](https://chatlab.fun/cn/usage/chatlab-format.html)
-- [故障排查指南](https://chatlab.fun/cn/usage/troubleshooting.html)
+在原有 ChatLab 基础上，补充了一套完整的 语义检索流程：
 
-## 预览界面
+User Question
+   ↓
+Query Rewrite（由对话模型生成检索 JSON）
+   ↓
+Embedding 向量化（支持 Ollama / OpenAI-compatible）
+   ↓
+Semantic Search（Top-K 消息召回）
+   ↓
+Evidence 注入到上下文（System Message）
+   ↓
+最终回答
 
-预览更多请前往官网 [chatlab.fun](https://chatlab.fun/cn/)
+核心特性
+	•	支持在配置中指定 embeddingModel
+	•	Embedding 与对话模型 解耦
+	•	检索结果以 证据块（evidence block） 形式注入上下文
+	•	若证据不足，模型需明确说明“不足”
 
-![预览界面](/public/images/intro_zh.png)
+⸻
 
-## 系统架构
+2️⃣ 修复 OpenAI-compatible 流式输出的 delta 问题
 
-### Electron 主进程
+在部分模型 / 后端（如某些 OpenAI-compatible 实现）中：
+	•	增量文本可能出现在：
+	•	delta.content
+	•	或 delta.reasoning
+	•	原实现只消费了 delta.content，会导致：
+	•	前端无输出
+	•	模型“自言自语”或丢字
 
-- `electron/main/index.ts` 负责应用生命周期、窗口管理、自定义协议注册
-- `electron/main/ipc/` 按功能拆分 IPC 模块（窗口、聊天、合并、AI、缓存），确保数据交换安全可控
-- `electron/main/ai/` 集成多家 LLM，内置 Agent 管道、提示词拼装、Function Calling 工具注册
+本 Fork 的处理方式
+	•	在流式处理中：
+	•	合并 delta.content + delta.reasoning
+	•	统一向上层 emit
+	•	不改变工具调用（tool_calls）逻辑
+	•	不侵入模型侧行为，仅做兼容处理
 
-### Worker 与数据管线
+⸻
 
-- `electron/main/worker/` 中的 `workerManager` 统筹 Worker 线程，`dbWorker` 负责路由消息
-- `worker/query/*` 承担活跃度、AI 搜索、高级分析、SQL 实验室等查询；`worker/import/streamImport.ts` 提供流式导入
-- `parser/` 目录采用嗅探 + 解析三层架构，能在恒定内存下处理 GB 级日志文件
+🔌 Embedding 模型建议（当前测试）
 
-### 渲染进程
+本 fork 在本地测试中使用了：
+	•	qwen3-embedding:0.6b/4b
+  •	bge-base-zh-v1.5-f16
+特性：
+	•	中文语义表现稳定
+	•	适合本地私有聊天记录检索
+  • 不同embedding模型无显著差距	
+  
+⚠️ 模型仅作为测试示例，不绑定本项目
 
-- Vue 3 + Nuxt UI + Tailwind CSS 负责可视化页面。`src/pages` 存放各业务页面，`src/components/analysis`、`src/components/charts` 等目录提供复用组件
-- `src/stores` 通过 Pinia 管理会话、布局、AI 提示词等状态；`src/composables/useAIChat.ts` 封装 AI 对话流程
-- 预加载脚本 `electron/preload/index.ts` 暴露 `window.chatApi/mergeApi/aiApi/llmApi`，确保渲染进程与主进程通信安全隔离
+⸻
 
-## 本地运行
+🛠️ 开发 & 运行
 
-### 启动步骤
-
-Node.js 环境依赖 v20+
-
-```bash
-# 安装依赖
 pnpm install
+pnpm dev
 
-# 启动开发服务器
-pnpm run dev
-```
+⚠️ 本仓库不包含 node_modules、out、dist 等构建产物
+请自行安装依赖
 
-若 Electron 在启动时异常，可尝试使用 `electron-fix`：
+⸻
 
-```bash
-npm install electron-fix -g
-electron-fix start
-```
+📄 License
 
-## 贡献指南
+本仓库遵循原项目 License（MIT）。
 
-提交 Pull Request 前请遵循以下原则：
+⸻
 
-- 明显的 Bug 修复可直接提交
-- 对于新功能，请先提交 Issue 进行讨论，**未经讨论直接提交的 PR 会被关闭**
-- 一个 PR 尽量只做一件事，若改动较大，请考虑拆分为多个独立的 PR
+🙏 致谢
+	•	原项目作者：@hellodigua￼
+	•	ChatLab 项目提供的良好基础架构
 
-## 隐私政策与用户协议
+⸻
 
-使用本软件前，请阅读 [隐私政策与用户协议](./src/assets/docs/agreement_zh.md)
+📌 说明（给维护者）
 
-## License
-
-AGPL-3.0 License
+如果你是原作者或维护者：
+	•	该 fork 不假设合并
+	•	仅作为：
+	•	Embedding Pipeline 实现参考
+	•	Streaming 兼容问题的实际修复样例
+	•	欢迎按需参考、摘取或重构
